@@ -1,3 +1,20 @@
+.idea/
+.vector_cache/
+enwik8/
+text8/
+.data/
+checkpoints/
+scripts/
+
+# log
+LOG
+
+# Profile
+*.lprof
+
+# Data
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

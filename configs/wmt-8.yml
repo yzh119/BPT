@@ -1,0 +1,32 @@
+seed: 2345
+dataset: 'wmt'
+graph_type: 'stt'
+graph_attrs:
+    step: 8
+    clip_dist: 1
+
+n_layers: 6
+m_layers: 6
+dim_embed: 512
+dim_model: 512
+dim_ff: 2048
+num_heads: 8
+dropouti: 0.1
+dropouth: 0.1
+dropouta: 0.1
+dropoutc: 0.1
+rel_pos: True
+
+n_epochs: 40
+lr: 1.e-3
+grad_accum: 2
+factor: 2
+batch_size: 512
+dev_batch_size: 256
+test_batch_size: 128
+log_interval: 1000
+doc_max_len: 128
+sent_max_len: 100
+share_weight: True
+
+save_name: 'wmt-8'

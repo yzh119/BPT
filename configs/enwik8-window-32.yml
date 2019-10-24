@@ -1,0 +1,28 @@
+seed: 2345
+dataset: 'enwik8'
+length: 512
+eval_length: 512
+graph_type: 'dense'
+graph_attrs:
+    window: 32
+
+n_layers: 12
+dim_embed: 512
+dim_model: 512
+dim_ff: 2048
+num_heads: 8
+dropouti: 0.1
+dropouth: 0.1
+dropouta: 0.1
+dropoutc: 0.1
+rel_pos: False
+
+n_epochs: 72
+eval_interval: 12
+lr: 4.1e-4
+batch_size: 64
+dev_batch_size: 64
+opt_wrapper: 'cosine'
+opt_attrs:
+    T_max: 400000
+log_interval: 30

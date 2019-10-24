@@ -1,0 +1,24 @@
+seed: 2345
+dataset: 'sst1'
+graph_type: 'stt'
+graph_attrs:
+    step: 4
+    clip_dist: 2
+
+n_layers: 4
+dim_embed: 300
+dim_model: 300
+dim_ff: 600
+num_heads: 6
+dropouti: 0.5
+dropouth: 0.1
+dropouta: 0.3
+dropoutc: 0.5
+rel_pos: True
+
+n_epochs: 100
+lr: 5.e-4
+batch_size: 1024
+dev_batch_size: 1024
+opt_wrapper: 'steady'
+log_interval: 40

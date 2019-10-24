@@ -1,0 +1,29 @@
+seed: 2345
+dataset: 'text8'
+length: 2048
+eval_length: 4096
+graph_type: 'stt'
+graph_attrs:
+    step: 64
+    clip_dist: 4
+
+n_layers: 12
+dim_embed: 512
+dim_model: 512
+dim_ff: 2048
+num_heads: 8
+dropouti: 0.1
+dropouth: 0.1
+dropouta: 0.1
+dropoutc: 0.1
+rel_pos: True
+
+n_epochs: 108
+eval_interval: 18
+lr: 4.1e-4
+batch_size: 16
+dev_batch_size: 16
+opt_wrapper: 'cosine'
+opt_attrs:
+    T_max: 600000
+log_interval: 60

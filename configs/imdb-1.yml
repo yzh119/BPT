@@ -1,0 +1,24 @@
+seed: 2345
+dataset: 'imdb'
+graph_type: 'stt'
+graph_attrs:
+    step: 1
+    clip_dist: 7
+
+n_layers: 5
+dim_embed: 300
+dim_model: 300
+dim_ff: 600
+num_heads: 6
+dropouti: 0.5
+dropouth: 0.1
+dropouta: 0.3
+dropoutc: 0.5
+rel_pos: True
+
+n_epochs: 60
+lr: 1.e-4
+batch_size: 32
+dev_batch_size: 32
+opt_wrapper: 'steady'
+log_interval: 40

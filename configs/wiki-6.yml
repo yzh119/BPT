@@ -1,0 +1,24 @@
+seed: 2345
+dataset: 'wiki-2'
+length: 320
+graph_type: 'stt'
+graph_attrs:
+    step: 8
+    clip_dist: 4
+
+n_layers: 6
+dim_embed: 320
+dim_model: 320
+dim_ff: 1024
+num_heads: 8
+dropouti: 0.5
+dropouth: 0.1
+dropoutc: 0.5
+rel_pos: True
+
+n_epochs: 25
+batch_size: 16
+dev_batch_size: 16
+opt_wrapper: 'reduce_lr_on_plateau_min'
+log_interval: 10
+
