@@ -110,7 +110,7 @@ class ReduceLROnPlateauOpt(object):
 
 
 class ExponentialDecay(object):
-    def __init__(self, optimizer, rate=0.99, warmup=4000):
+    def __init__(self, optimizer, rate=0.97, warmup=0):
         self.optimizer = optimizer
         self.rate = rate
         self._step = 0
@@ -118,7 +118,6 @@ class ExponentialDecay(object):
         self.init_lr = {}
         for p in self.optimizer.param_groups:
             self.init_lr[id(p)] = p['lr']
-
 
     def zero_grad(self):
         self.optimizer.zero_grad()

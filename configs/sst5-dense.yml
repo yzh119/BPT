@@ -1,0 +1,23 @@
+seed: 2345
+dataset: 'sst1'
+graph_type: 'dense'
+
+n_layers: 4
+dim_embed: 300
+dim_model: 300
+dim_ff: 600
+num_heads: 6
+dropouti: 0.4
+dropouth: 0.1
+dropouta: 0.3
+dropoutc: 0.4
+rel_pos: True
+
+n_epochs: 40
+lr: 2.5e-4
+batch_size: 1024
+dev_batch_size: 1024
+opt_wrapper: 'exp_decay'
+log_interval: 40
+opt_attrs:
+    rate: 1

@@ -95,7 +95,8 @@ optimizer = get_wrapper(config['opt_wrapper'])(
     optim.Adam([
         {'params': embed_params, 'lr': 0},
         {'params': other_params, 'lr': config.get('lr', 1e-3)},
-        {'params': wd_params, 'lr': config.get('lr', 1e-3), 'weight_decay': 5e-5}]))
+        {'params': wd_params, 'lr': config.get('lr', 1e-3), 'weight_decay': 5e-5}]),
+    **config.get('opt_attrs', {}))
 
 best_val, test_acc = 1e9, 0
 

@@ -85,6 +85,10 @@ For sentence level modeling, we show that STT models better inductive bias than 
     - Transformer: 87.89(±0.31)
     - To reproduce: `python nli.py --config configs/snli.yml --gpu 0` 
         - Like Text Classification, the result on NLI is also not stable because of randomness in our CUDA kernel, we report the mean and std of accuracy in multiple(7) runs.
+- Sentiment Analysis(SST, metric: accuracy), 4 layer.
+    - STT+GloVe: 52.71(±0.32)
+    - Transformer+GloVe: 50.40
+    - Tree-LSTM+GloVe: 51.0
 
 ## TODOs
 
