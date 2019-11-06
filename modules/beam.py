@@ -1,13 +1,16 @@
 """
 Beam search module for Document Level Machine Translation.
 """
-from .model import SegmentTreeEncoderDecoder, get_csrs
+from .model import SegmentTreeEncoderDecoder
 import torch as th
 import numpy as np
 import dgl
 import copy
 import itertools
 
+
+def move_to_device(_tuple, device):
+    return tuple(x.to(device) if isinstance(x, th.Tensor) else move_to_device(x, device) for x in _tuple)
 
 class SegmentTreeBeamSearch(SegmentTreeEncoderDecoder):
     BEAM_SIZE = 5
@@ -31,7 +34,7 @@ class SegmentTreeBeamSearch(SegmentTreeEncoderDecoder):
         batch_size = len(batch.nid_seg_arr)
         g_enc = batch.g_enc.local_var()
         device = next(self.parameters()).device
-        csr_enc = get_csrs(g_enc, device)
+        csr_enc = move_to_device(batch.g_enc_csr, device)
 
         leaf_ids = batch.leaf_ids['enc']
         h_enc = self.embed[0](g_enc.nodes[leaf_ids].data['x'])

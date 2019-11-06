@@ -302,3 +302,20 @@ cdef class FullyConnected:
     def internal_ids(self, v_shift=0):
         return np.arange(v_shift + self.length, v_shift + self.n_nodes)
 
+def partition_csr(np.ndarray[np.int64_t, ndim=1] indptr, int chunk_size=32):
+    cdef int n = 0, i, length = len(indptr)
+    cdef np.ndarray[np.int64_t, ndim=1] row, indptr_
+    for i in range(length - 1):
+        n += (indptr[i + 1] + chunk_size - 1 - indptr[i]) // chunk_size
+
+    row = np.empty(shape=(n), dtype=np.int64)
+    indptr_ = np.empty(shape=(n+1), dtype=np.int64) 
+    cnt = 0
+    for i in range(length - 1):
+        for j in range(indptr[i], indptr[i + 1], chunk_size):
+            row[cnt] = i
+            indptr_[cnt] = j
+            cnt += 1
+
+    indptr_[n] = indptr[length - 1]
+    return row, indptr_

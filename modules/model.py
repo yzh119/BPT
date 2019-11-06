@@ -1,45 +1,9 @@
 from .attention import STTBlock, STTMemBlock
 from .embedding import PositionalEncoding, Embedding, KDEmbedding
-from numba import jit
 
 import numpy as np
 import torch as th
 import torch.nn as nn
-
-@jit(nopython=True)
-def partition_csr(indptr, chunk_size=32):
-    n = 0
-    for i in range(len(indptr) - 1):
-        n += (indptr[i + 1] + chunk_size - 1 - indptr[i]) // chunk_size
-
-    row = np.empty(shape=(n), dtype=np.int64)
-    indptr_ = np.empty(shape=(n+1), dtype=np.int64) 
-    cnt = 0
-    for i in range(len(indptr) - 1):
-        for j in range(indptr[i], indptr[i + 1], chunk_size):
-            row[cnt] = i
-            indptr_[cnt] = j
-            cnt += 1
-
-    indptr_[n] = indptr[-1]
-    return row, indptr_
-
-def get_csrs(g, device):
-    out_csr = g.adjacency_matrix_scipy(transpose=True, fmt='csr', return_edge_ids=True)
-    ROW, INDPTR_R = partition_csr(out_csr.indptr)
-    ROW = th.from_numpy(ROW).to(device)
-    INDPTR_R = th.from_numpy(INDPTR_R).to(device)
-    out_csr = (th.tensor(out_csr.indptr, dtype=th.long, device=device),
-               th.tensor(out_csr.indices, dtype=th.long, device=device),
-               th.tensor(out_csr.data, dtype=th.long, device=device))
-    in_csr = g.adjacency_matrix_scipy(transpose=False, fmt='csr', return_edge_ids=True)
-    COL, INDPTR_C = partition_csr(in_csr.indptr)
-    COL = th.from_numpy(COL).to(device)
-    INDPTR_C = th.from_numpy(INDPTR_C).to(device)
-    in_csr = (th.tensor(in_csr.indptr, dtype=th.long, device=device),
-              th.tensor(in_csr.indices, dtype=th.long, device=device),
-              th.tensor(in_csr.data, dtype=th.long, device=device))
-    return out_csr, in_csr, ROW, INDPTR_R, COL, INDPTR_C
 
 class Generator(nn.Module):
     """
@@ -52,6 +16,8 @@ class Generator(nn.Module):
     def forward(self, x):
         return th.log_softmax(self.proj(x), dim=-1)
 
+def move_to_device(_tuple, device):
+    return tuple(x.to(device) if isinstance(x, th.Tensor) else move_to_device(x, device) for x in _tuple)
 
 class SegmentTreeEncoderDecoder(nn.Module):
     def __init__(self, vocab_sizes, dim_model, dim_ff, h,
@@ -106,9 +72,9 @@ class SegmentTreeEncoderDecoder(nn.Module):
         g_dec = batch.g_dec.local_var()
         g_inter = batch.g_inter.local_var()
         device = next(self.parameters()).device
-        csr_enc = get_csrs(g_enc, device)
-        csr_dec = get_csrs(g_dec, device)
-        csr_inter = get_csrs(g_inter, device)
+        csr_enc = move_to_device(batch.g_enc_csr, device)
+        csr_dec = move_to_device(batch.g_dec_csr, device)
+        csr_inter = move_to_device(batch.g_inter_csr, device)
 
         leaf_ids = batch.leaf_ids['enc']
         h_enc = self.embed[0](g_enc.nodes[leaf_ids].data['x'])
@@ -197,7 +163,7 @@ class SegmentTreeMatching(nn.Module):
         g = batch.g.local_var()
         leaf_ids = batch.leaf_ids
         device = next(self.parameters()).device
-        csr = get_csrs(g, device)
+        csr = move_to_device(batch.g_csr, device)
 
         # get embedding
         h = self.embed(g.nodes[leaf_ids].data['x'])
@@ -218,7 +184,7 @@ class SegmentTreeMatching(nn.Module):
 
         g_inter = batch.g_inter.local_var()
         mem = g.ndata['h']
-        csr_inter = get_csrs(g_inter, device)
+        csr_inter = move_to_device(batch.g_inter_csr, device)
 
         for layer in self.dec_layers:
             layer(g, csr, mem, csr_inter)
@@ -275,7 +241,7 @@ class SegmentTreeTransformer(nn.Module):
         g = batch.g.local_var()
         leaf_ids = batch.leaf_ids
         device = next(self.parameters()).device
-        csr = get_csrs(g, device)
+        csr = move_to_device(batch.g_csr, device)
 
         # get embedding
         h = self.embed(g.nodes[leaf_ids].data['x'])

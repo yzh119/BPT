@@ -1,9 +1,10 @@
 seed: 2345
 dataset: 'wiki-2'
 length: 320
+eval_length: 320
 graph_type: 'stt'
 graph_attrs:
-    step: 8
+    step: 4
     clip_dist: 4
 
 n_layers: 6
