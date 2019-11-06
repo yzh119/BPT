@@ -1,4 +1,5 @@
 from graphbuilder import SegmentTree, FullyConnected, OpenAISparse
+from dgl import DGLGraph
 import torch as th
 
 class GraphBatcher:
@@ -103,6 +104,7 @@ class Batch:
         if g_enc is not None:
             self.g_enc_csr = get_csrs(g_enc)
         if g_dec is not None:
-            self.g_dec_csr = get_csrs(g_dec)
+            if isinstance(g_dec, DGLGraph):
+                self.g_dec_csr = get_csrs(g_dec)
         if g_inter is not None:
             self.g_inter_csr = get_csrs(g_inter)
