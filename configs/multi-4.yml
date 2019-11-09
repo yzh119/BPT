@@ -1,6 +1,6 @@
 seed: 2345
 dataset: 'multi'
-graph_type: 'stt'
+graph_type: 'bpt'
 graph_attrs:
     step: 4
     clip_dist: 2

@@ -2,7 +2,7 @@ seed: 2345
 dataset: 'enwik8'
 length: 8192
 eval_length: 8192
-graph_type: 'stt'
+graph_type: 'bpt'
 graph_attrs:
     step: 64
     clip_dist: 6

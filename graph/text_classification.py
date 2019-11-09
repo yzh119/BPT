@@ -17,7 +17,7 @@ def get_text_classification_dataset(name='sst'):
         raise KeyError('invalid dataset name')
 
 class TCBatcher(GraphBatcher):
-    def __init__(self, TEXT, LABEL, graph_type='stt', **kwargs):
+    def __init__(self, TEXT, LABEL, graph_type='bpt', **kwargs):
         super(TCBatcher, self).__init__(triu=True, graph_type=graph_type, **kwargs)
         self.TEXT = TEXT
         self.LABEL = LABEL

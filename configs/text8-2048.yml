@@ -2,7 +2,7 @@ seed: 2345
 dataset: 'text8'
 length: 2048
 eval_length: 4096
-graph_type: 'stt'
+graph_type: 'bpt'
 graph_attrs:
     step: 64
     clip_dist: 4

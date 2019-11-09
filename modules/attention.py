@@ -19,10 +19,10 @@ class PositionwiseFeedForward(nn.Module):
         return self.w_2(self.dropout(th.relu(self.w_1(x))))
 
 
-class STTBlock(nn.Module):
+class BPTBlock(nn.Module):
     MAX_ETYPE = 1000
     def __init__(self, dim_model, h, dim_ff, rel_pos=False, drop_h=0.1, drop_a=0.1):
-        super(STTBlock, self).__init__()
+        super(BPTBlock, self).__init__()
         self.dim_model = dim_model
         self.h = h
         self.dim_ff = dim_ff
@@ -81,10 +81,10 @@ class STTBlock(nn.Module):
         g.ndata['h'] = h
 
 
-class STTMemBlock(nn.Module):
+class BPTMemBlock(nn.Module):
     MAX_ETYPE = 1000
     def __init__(self, dim_model, h, dim_ff, rel_pos=False, drop_h=0.1, drop_a=0.1):
-        super(STTMemBlock, self).__init__()
+        super(BPTMemBlock, self).__init__()
         self.dim_model = dim_model
         self.h = h
         self.dim_ff = dim_ff

@@ -41,7 +41,7 @@ def get_lm_dataset(name='ptb'):
         raise KeyError('invalid dataset name')
 
 class LMBatcher(GraphBatcher):
-    def __init__(self, TEXT, graph_type='stt', **kwargs):
+    def __init__(self, TEXT, graph_type='bpt', **kwargs):
         super(LMBatcher, self).__init__(triu=True, graph_type=graph_type, **kwargs)
         self.TEXT = TEXT
         self._cache = {}

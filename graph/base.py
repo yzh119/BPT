@@ -1,9 +1,9 @@
-from graphbuilder import SegmentTree, FullyConnected, OpenAISparse
+from graphbuilder import BinaryPartition, FullyConnected, OpenAISparse
 from dgl import DGLGraph
 import torch as th
 
 class GraphBatcher:
-    def __init__(self, triu=False, graph_type='stt', **kwargs):
+    def __init__(self, triu=False, graph_type='bpt', **kwargs):
         self._graph_cache = {}
         self.triu = triu
         self.graph_type = graph_type
@@ -18,8 +18,8 @@ class GraphBatcher:
                 new_g = OpenAISparse(l, attrs['stride'], attrs['l'], triu=self.triu)
             elif self.graph_type == 'dense':
                 new_g = FullyConnected(l, triu=self.triu, window=attrs.get('window', 8192))
-            elif self.graph_type == 'stt':
-                new_g = SegmentTree(l, triu=self.triu, step=attrs['step'], clip_dist=attrs['clip_dist'])
+            elif self.graph_type == 'bpt':
+                new_g = BinaryPartition(l, triu=self.triu, step=attrs['step'], clip_dist=attrs['clip_dist'])
             else:
                 raise KeyError('unrecognized graph type')
             self._graph_cache[l] = new_g
@@ -29,7 +29,7 @@ class GraphBatcher:
         raise NotImplementedError
 
 class EncDecBatcher(GraphBatcher):
-    def __init__(self, graph_type='stt', **kwargs):
+    def __init__(self, graph_type='bpt', **kwargs):
         self._graph_cache_enc = {}
         self._graph_cache_dec = {}
         self.graph_type = graph_type
@@ -45,8 +45,8 @@ class EncDecBatcher(GraphBatcher):
             attrs = self.attrs
             if self.graph_type == 'dense':
                 new_g = FullyConnected(l, triu=False, window=attrs.get('window', 8192))
-            elif self.graph_type == 'stt':
-                new_g = SegmentTree(l, triu=False, step=attrs['step'], clip_dist=attrs['clip_dist'])
+            elif self.graph_type == 'bpt':
+                new_g = BinaryPartition(l, triu=False, step=attrs['step'], clip_dist=attrs['clip_dist'])
             else:
                 raise KeyError('unrecognized graph type')
             self._graph_cache_enc[l] = new_g
@@ -59,8 +59,8 @@ class EncDecBatcher(GraphBatcher):
             args = self.attrs
             if self.graph_type == 'dense':
                 new_g = FullyConnected(l, triu=True, window=args.get('window', 8192))
-            elif self.graph_type == 'stt':
-                new_g = SegmentTree(l, triu=True, step=args['step'], clip_dist=args['clip_dist'])
+            elif self.graph_type == 'bpt':
+                new_g = BinaryPartition(l, triu=True, step=args['step'], clip_dist=args['clip_dist'])
             else:
                 raise KeyError('unrecognized graph type')
             self._graph_cache_dec[l] = new_g

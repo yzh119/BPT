@@ -110,7 +110,7 @@ class Multi30k(TranslationDataset):
         return rst_vocab
 
 class MTInferBatcher(EncDecBatcher):
-    def __init__(self, TEXT, max_length, bos_token, graph_type='stt', **kwargs):
+    def __init__(self, TEXT, max_length, bos_token, graph_type='bpt', **kwargs):
         super(MTInferBatcher, self).__init__(graph_type=graph_type, **kwargs)
         self.TEXT = TEXT
         self._cache = {}
@@ -235,7 +235,7 @@ class MTInferBatcher(EncDecBatcher):
                      n_nodes_per_dec_graph=n_nodes_per_dec_graph, n_sent_ctx=n_sent_ctx)
 
 class MTBatcher(EncDecBatcher):
-    def __init__(self, TEXT, graph_type='stt', **kwargs):
+    def __init__(self, TEXT, graph_type='bpt', **kwargs):
         super(MTBatcher, self).__init__(graph_type=graph_type, **kwargs)
         self.TEXT = TEXT
         self._cache = {}

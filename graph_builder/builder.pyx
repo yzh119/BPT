@@ -20,7 +20,7 @@ etype:
 TODO
 """
 
-cdef class SegmentTree:
+cdef class BinaryPartition:
     cdef size_t length, n_nodes, n_lvl, n_edges, step, clip_dist
     cdef bool triu
     cdef vector[DTYPE_t] edges[3]
@@ -36,7 +36,7 @@ cdef class SegmentTree:
         self.build_graph()
 
     def __reduce__(self):
-        return SegmentTree, (self.length, self.triu, self.step, self.clip_dist)
+        return BinaryPartition, (self.length, self.triu, self.step, self.clip_dist)
 
     def build_graph(self):
         # count nodes and compute shift for each level

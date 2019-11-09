@@ -1,7 +1,7 @@
 """
 Beam search module for Document Level Machine Translation.
 """
-from .model import SegmentTreeEncoderDecoder
+from .model import BinaryPartitionEncoderDecoder
 import torch as th
 import numpy as np
 import dgl
@@ -12,12 +12,12 @@ import itertools
 def move_to_device(_tuple, device):
     return tuple(x.to(device) if isinstance(x, th.Tensor) else move_to_device(x, device) for x in _tuple)
 
-class SegmentTreeBeamSearch(SegmentTreeEncoderDecoder):
+class BinaryPartitionBeamSearch(BinaryPartitionEncoderDecoder):
     BEAM_SIZE = 5
     def __init__(self, vocab_sizes, dim_model, dim_ff, h,
                  n_layers, m_layers,
                  dropouti=0.1, dropouth=0.1, dropouta=0.1, dropoutc=0, rel_pos=False):
-        super(SegmentTreeBeamSearch, self).__init__(vocab_sizes, dim_model, dim_ff, h,
+        super(BinaryPartitionBeamSearch, self).__init__(vocab_sizes, dim_model, dim_ff, h,
                                                     n_layers, m_layers,
                                                     dropouti=dropouti, dropouth=dropouth,
                                                     dropoutc=dropoutc, dropouta=dropouta, rel_pos=rel_pos)
@@ -176,5 +176,5 @@ class SegmentTreeBeamSearch(SegmentTreeEncoderDecoder):
 
 
 def make_translate_infer_model(*args, **kwargs):
-    model = SegmentTreeBeamSearch(*args, **kwargs)
+    model = BinaryPartitionBeamSearch(*args, **kwargs)
     return model

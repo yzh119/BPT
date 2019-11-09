@@ -17,7 +17,7 @@ def get_nli_dataset(name='snli'):
 
 
 class NLIBatcher(GraphBatcher):
-    def __init__(self, TEXT, LABEL, graph_type='stt', **kwargs):
+    def __init__(self, TEXT, LABEL, graph_type='bpt', **kwargs):
         super(NLIBatcher, self).__init__(triu=True, graph_type=graph_type, **kwargs)
         self.TEXT = TEXT
         self.LABEL = LABEL

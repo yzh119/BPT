@@ -1,4 +1,4 @@
-from .attention import STTBlock, STTMemBlock
+from .attention import BPTBlock, BPTMemBlock
 from .embedding import PositionalEncoding, Embedding, KDEmbedding
 
 import numpy as np
@@ -19,11 +19,11 @@ class Generator(nn.Module):
 def move_to_device(_tuple, device):
     return tuple(x.to(device) if isinstance(x, th.Tensor) else move_to_device(x, device) for x in _tuple)
 
-class SegmentTreeEncoderDecoder(nn.Module):
+class BinaryPartitionEncoderDecoder(nn.Module):
     def __init__(self, vocab_sizes, dim_model, dim_ff, h,
                  n_layers, m_layers,
                  dropouti=0.1, dropouth=0.1, dropouta=0.1, dropoutc=0.1, rel_pos=False):
-        super(SegmentTreeEncoderDecoder, self).__init__()
+        super(BinaryPartitionEncoderDecoder, self).__init__()
         self.dim_model = dim_model
         self.dim_ff = dim_ff
         self.h = h
@@ -46,7 +46,7 @@ class SegmentTreeEncoderDecoder(nn.Module):
         enc_layer_list = []
         for _ in range(n_layers):
             enc_layer_list.append(
-                STTBlock(self.dim_model, self.h, self.dim_ff,
+                BPTBlock(self.dim_model, self.h, self.dim_ff,
                          rel_pos=self.rel_pos, drop_h=dropouth, drop_a=dropouta)
             )
         self.enc_layers = nn.ModuleList(enc_layer_list)
@@ -54,7 +54,7 @@ class SegmentTreeEncoderDecoder(nn.Module):
         dec_layer_list = []
         for _ in range(m_layers):
             dec_layer_list.append(
-                STTMemBlock(self.dim_model, self.h, self.dim_ff,
+                BPTMemBlock(self.dim_model, self.h, self.dim_ff,
                             rel_pos=self.rel_pos, drop_h=dropouth, drop_a=dropouta)
             )
         self.dec_layers = nn.ModuleList(dec_layer_list)
@@ -105,11 +105,11 @@ class SegmentTreeEncoderDecoder(nn.Module):
 
         return output
 
-class SegmentTreeMatching(nn.Module):
+class BinaryPartitionMatching(nn.Module):
     def __init__(self, vocab_size, dim_embed, dim_model, dim_ff, h, n_classes,
                  n_layers, m_layers,
                  dropouti=0.1, dropouth=0.1, dropouta=0.1, dropoutc=0, rel_pos=False):
-        super(SegmentTreeMatching, self).__init__()
+        super(BinaryPartitionMatching, self).__init__()
         self.dim_embed = dim_embed
         self.dim_model = dim_model
         self.dim_ff = dim_ff
@@ -132,14 +132,14 @@ class SegmentTreeMatching(nn.Module):
         enc_layer_list = []
         for _ in range(n_layers):
             enc_layer_list.append(
-                STTBlock(self.dim_model, self.h, self.dim_ff,
+                BPTBlock(self.dim_model, self.h, self.dim_ff,
                          rel_pos=self.rel_pos, drop_h=dropouth, drop_a=dropouta))
         self.enc_layers = nn.ModuleList(enc_layer_list)
 
         dec_layer_list = []
         for _ in range(m_layers):
             dec_layer_list.append(
-                STTMemBlock(self.dim_model, self.h, self.dim_ff,
+                BPTMemBlock(self.dim_model, self.h, self.dim_ff,
                             rel_pos=self.rel_pos, drop_h=dropouth, drop_a=dropouta)
             )
         self.dec_layers = nn.ModuleList(dec_layer_list)
@@ -194,11 +194,11 @@ class SegmentTreeMatching(nn.Module):
 
         return output
 
-class SegmentTreeTransformer(nn.Module):
+class BinaryPartitionTransformer(nn.Module):
     def __init__(self, vocab_size, dim_embed, dim_model, dim_ff, h, n_classes, n_layers,
                  dropouti=0.1, dropouth=0.1, dropouta=0.1, dropoutc=0, rel_pos=False,
                  dim_pos=1):
-        super(SegmentTreeTransformer, self).__init__()
+        super(BinaryPartitionTransformer, self).__init__()
         self.dim_embed = dim_embed
         self.dim_model = dim_model
         self.dim_ff = dim_ff
@@ -226,7 +226,7 @@ class SegmentTreeTransformer(nn.Module):
         layer_list = []
         for _ in range(n_layers):
             layer_list.append(
-                STTBlock(self.dim_model, self.h, self.dim_ff,
+                BPTBlock(self.dim_model, self.h, self.dim_ff,
                          rel_pos=self.rel_pos, drop_h=dropouth, drop_a=dropouta))
         self.layers = nn.ModuleList(layer_list)
 
@@ -280,16 +280,16 @@ class SegmentTreeTransformer(nn.Module):
             return output
 
 def make_model(*args, **kwargs):
-    model = SegmentTreeTransformer(*args, **kwargs)
+    model = BinaryPartitionTransformer(*args, **kwargs)
     model.reset_parameters()
     return model
 
 def make_matching_model(*args, **kwargs):
-    model = SegmentTreeMatching(*args, **kwargs)
+    model = BinaryPartitionMatching(*args, **kwargs)
     model.reset_parameters()
     return model
 
 def make_translation_model(*args, **kwargs):
-    model = SegmentTreeEncoderDecoder(*args, **kwargs)
+    model = BinaryPartitionEncoderDecoder(*args, **kwargs)
     model.reset_parameters()
     return model
