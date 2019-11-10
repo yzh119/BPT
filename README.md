@@ -1,7 +1,7 @@
-# Segment Tree Transformer
+# BP-Transformer
 This repo contains the code for our paper
 
-[Segment Tree Transformer]()
+[BP-Transformer: Modeling Long-Range Context via Binary Partition]()
 
 The code is written in [DGL](https://github.com/dmlc/dgl) with PyTorch as backend.
 
@@ -53,7 +53,7 @@ Currently we do not support CPU training/inference.
 
 ## Results
 
-- Character-Level Language Modeling (enwik8, metric: bpc), 12 layer
+- Character-Level Language Modeling (enwik8, metric: bpc), 12 layers.
     - STT(context length=8192): 1.02
     - Adaptive Transformer: 1.02
     - Transformer-XL: 1.06
@@ -62,7 +62,7 @@ Currently we do not support CPU training/inference.
     - STT(context length=64): 19.84
     - HAN-NMT: 17.68
     - To reproduce: `python mt.py --config configs/iwslt-4-64.yml --gpu 0`
-- Sentiment Analysis (IMDB, metric: accuracy), 5 layer.
+- Text Classification (IMDB, metric: accuracy), 5 layers.
     - STT+GloVe: 92.12(±0.11)
     - LSTM+CoVe: 91.8
     - Transformer+Glove: 89.24(±0.20)
@@ -80,12 +80,12 @@ For sentence level modeling, we show that STT models better inductive bias than 
     - Transformer-base(our implementation): 27.2
     - To reproduce: `python mt.py --config configs/wmt-*.yml --gpu 0,1,2,3,4,5,6,7`
         - We report [SacreBLEU](https://github.com/mjpost/sacreBLEU) result for reproducibility (setting: `BLEU+c.mixed+l.en-de+#.1+s.exp+t.wmt14+tok.intl+v.1.4.1`), the sacrebleu score is usually lower than that produced by `get_ende_bleu.sh` script in tensor2tensor as described [here](https://github.com/tensorflow/tensor2tensor/issues/317). 
-- Natural Language Inference(SNLI, metric: accuracy)
+- Natural Language Inference(SNLI, metric: accuracy), ESIM-like structure, 3 layers for self-attention and 3 layers for cross-sentence attention.
     - STT(k=4): 88.25(±0.07)
     - Transformer: 87.89(±0.31)
     - To reproduce: `python nli.py --config configs/snli.yml --gpu 0` 
         - Like Text Classification, the result on NLI is also not stable because of randomness in our CUDA kernel, we report the mean and std of accuracy in multiple(7) runs.
-- Sentiment Analysis(SST, metric: accuracy), 4 layer.
+- Text Classification(SST-5, metric: accuracy), 4 layers.
     - STT+GloVe: 52.71(±0.32)
     - Transformer+GloVe: 50.40
     - Tree-LSTM+GloVe: 51.0
