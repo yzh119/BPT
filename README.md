@@ -2,6 +2,7 @@
 This repo contains the code for our paper
 
 > [BP-Transformer: Modeling Long-Range Context via Binary Partition](https://arxiv.org/pdf/1911.04070.pdf)
+
 > Zihao Ye, Qipeng Guo, Quan Gan, Xipeng Qiu, Zheng Zhang
 
 The code is written in [DGL](https://github.com/dmlc/dgl) with PyTorch as backend.
