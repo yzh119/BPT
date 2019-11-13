@@ -29,7 +29,7 @@ python setup.py install
 cd ..
 ``` 
 
-We support the following tasks with STT as backbone:
+We support the following tasks with BPT as backbone:
 - Text Classification: `text_classification.py`
 - Language Modeling: `lm.py`
 - Machine Translation: `mt.py`
@@ -56,16 +56,16 @@ Currently we do not support CPU training/inference.
 ## Results
 
 - Character-Level Language Modeling (enwik8, metric: bpc), 12 layers.
-    - STT(context length=8192): 1.02
+    - BPT(context length=8192): 1.02
     - Adaptive Transformer: 1.02
     - Transformer-XL: 1.06
     - To reproduce: `python lm.py --config configs/enwik8-8192.yml --gpu 0,1,2,3,4,5,6,7`
 - Document-Level Machine Translation (IWSLT 2015 Zh-En, metric: BLEU), base setting.
-    - STT(context length=64): 19.84
+    - BPT(context length=64): 19.84
     - HAN-NMT: 17.68
     - To reproduce: `python mt.py --config configs/iwslt-4-64.yml --gpu 0`
 - Text Classification (IMDB, metric: accuracy), 5 layers.
-    - STT+GloVe: 92.12(±0.11)
+    - BPT+GloVe: 92.12(±0.11)
     - LSTM+CoVe: 91.8
     - Transformer+Glove: 89.24(±0.20)
     - Star Transformer: 90.50
@@ -73,24 +73,25 @@ Currently we do not support CPU training/inference.
         - Note that our CUDA kernel uses atomic operations which may result in non-determinism, we report the mean and std of accuracy in multiple(10) runs.
         - The IMDB dataset has not official train/dev split, we follow the setting of [Bryan et al., 2017](https://arxiv.org/pdf/1708.00107.pdf) and hold out 10% samples for validation. We report the test accuracy of model with best valid loss.
 
-For sentence level modeling, we show that STT models better inductive bias than vanilla transformer by attending fine-grained features of neighbors and coarse-grained features of far-away tokens.
+For sentence level modeling, we show that BPT models better inductive bias than vanilla transformer by attending fine-grained features of neighbors and coarse-grained features of far-away tokens.
 - Machine Translation(WMT14 En-De, metric: BLEU), base setting.
-    - STT(k=1): 26.9
-    - STT(k=2): 27.4
-    - STT(k=4): 27.6
-    - STT(k=8): 26.7
+    - BPT(k=1): 26.9
+    - BPT(k=2): 27.4
+    - BPT(k=4): 27.6
+    - BPT(k=8): 26.7
     - Transformer-base(our implementation): 27.2
     - To reproduce: `python mt.py --config configs/wmt-*.yml --gpu 0,1,2,3,4,5,6,7`
         - We report [SacreBLEU](https://github.com/mjpost/sacreBLEU) result for reproducibility (setting: `BLEU+c.mixed+l.en-de+#.1+s.exp+t.wmt14+tok.intl+v.1.4.1`), the sacrebleu score is usually lower than that produced by `get_ende_bleu.sh` script in tensor2tensor as described [here](https://github.com/tensorflow/tensor2tensor/issues/317). 
 - Natural Language Inference(SNLI, metric: accuracy), ESIM-like structure, 3 layers for self-attention and 3 layers for cross-sentence attention.
-    - STT(k=4): 88.25(±0.07)
+    - BPT(k=4): 88.25(±0.07)
     - Transformer: 87.89(±0.31)
     - To reproduce: `python nli.py --config configs/snli.yml --gpu 0` 
         - Like Text Classification, the result on NLI is also not stable because of randomness in our CUDA kernel, we report the mean and std of accuracy in multiple(7) runs.
 - Text Classification(SST-5, metric: accuracy), 4 layers.
-    - STT+GloVe: 52.71(±0.32)
+    - BPT+GloVe: 52.71(±0.32)
     - Transformer+GloVe: 50.40
     - Tree-LSTM+GloVe: 51.0
+    - To reproduce: `python text_classification.py --config configs/sst5-2.yml --gpu 0`
 
 ## TODOs
 
