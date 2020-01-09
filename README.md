@@ -53,6 +53,11 @@ Before decoding, please make sure you have finished the training using `mt.py` w
 **NOTE**:
 Currently we do not support CPU training/inference.
 
+## Visualization
+
+Following is the visualization of the sparse matrix of BPT underlying graph when sequence length is 8192 and k is 4.
+![image](https://user-images.githubusercontent.com/11773619/72076682-e3b5a300-3330-11ea-9da9-c16bc289f09d.png)
+
 ## Results
 
 - Character-Level Language Modeling (enwik8, metric: bpc), 12 layers.
