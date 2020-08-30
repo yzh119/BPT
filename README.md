@@ -10,7 +10,7 @@ The code is written in [DGL](https://github.com/dmlc/dgl) with PyTorch as backen
 ## Requirements
 
 - torchtext 0.4
-- dgl 0.4
+- dgl 0.4 (this code on master branch is not compatible with dgl 0.5, please checkout dgl-0.5 branch).
 - yaml
 - spacy
 - PyTorch 1.1+
