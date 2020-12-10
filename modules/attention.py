@@ -2,7 +2,7 @@ import torch.nn as nn
 import numpy as np
 import dgl.function as fn
 import torch as th
-from dgl.nn.pytorch.softmax import edge_softmax
+from dgl.ops import edge_softmax
 from .op import *
 
 class PositionwiseFeedForward(nn.Module):
@@ -51,31 +51,24 @@ class BPTBlock(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def forward(self, g, csr):
+    def forward(self, g):
+        g = g.local_var()
         h = g.ndata['h'] # get pos embedding
         if self.rel_pos:
             g.edata['ak'] = self.embed_ak(g.edata['etype'])
 
-        # get in and out csr
-        out_csr, in_csr, ROW, INDPTR_R, COL, INDPTR_C = csr 
         # get queries, keys and values
         g.ndata['q'] = self.proj_q(h).view(-1, self.h, self.d_k)
         g.ndata['k'] = self.proj_k(h).view(-1, self.h, self.d_k)
         g.ndata['v'] = self.proj_v(h).view(-1, self.h, self.d_k)
 
-        e = masked_mm(
-            ROW, INDPTR_R, out_csr[2], out_csr[1], COL, INDPTR_C, in_csr[2], in_csr[1], g.ndata['k'], g.ndata['q'])
-
-        e_rel = 0
+        g.apply_edges(fn.v_dot_u('q', 'k', 'e'))
         if self.rel_pos:
-            e_rel = node_mul_edge(COL, INDPTR_C, in_csr[2], g.ndata['q'], g.edata['ak'])
-
-        e = self.drop_att(sparse_softmax(COL, INDPTR_C, in_csr[2], (e_rel + e) / np.sqrt(self.d_k)))
-        a = vec_spmm(
-            COL, INDPTR_C, in_csr[2], in_csr[1],
-            ROW, INDPTR_R, out_csr[2], out_csr[1],
-            e, g.ndata['v']).view(-1, self.d_k * self.h)
-        o = self.drop_h(self.proj_o(a))
+            g.apply_edges(fn.v_dot_e('q', 'ak', 'e_rel'))
+            g.edata['e'] += g.edata['e_rel']
+        g.edata['a'] = self.drop_att(edge_softmax(g, g.edata['e'] / np.sqrt(self.d_k)))
+        g.update_all(fn.u_mul_e('v', 'a', 'm'), fn.sum('m', 'va'))
+        o = self.drop_h(self.proj_o(g.ndata['va'].view(-1, self.d_k * self.h)))
         h = self.norm_in(h + o)
         h = self.norm_inter(h + self.ffn(h))
         g.ndata['h'] = h

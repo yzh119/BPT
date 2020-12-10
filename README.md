@@ -9,8 +9,8 @@ The code is written in [DGL](https://github.com/dmlc/dgl) with PyTorch as backen
 
 ## Requirements
 
-- torchtext 0.4
-- dgl 0.4 (the code on master branch is not compatible with dgl 0.5, please checkout `develop` branch for dgl 0.5 compatible version).
+- torchtext
+- dgl 0.5.3
 - yaml
 - spacy
 - PyTorch 1.1+
@@ -19,12 +19,9 @@ The code is written in [DGL](https://github.com/dmlc/dgl) with PyTorch as backen
 
 For Multi-GPU training, please `export NCCL_LL_THRESHOLD=0` before running scripts because of a PyTorch bug mentioned [here](https://github.com/pytorch/pytorch/issues/20630).
 
-The codebase has two dependencies: `graph_kernel` and `graph_builder`, the first one is for efficient graph attention on GPU with node parallel strategy written in CUDA, the second one is for efficient graph construction written in Cython. To install them:
+The codebase has a dependency: `graph_builder` for efficient graph construction written in Cython, you can use following instructions to install it:
 ```
 cd graph_builder
-python setup.py install
-cd ..
-cd graph_kernel
 python setup.py install
 cd ..
 ``` 
@@ -98,8 +95,3 @@ For sentence level modeling, we show that BPT models better inductive bias than 
     - Tree-LSTM+GloVe: 51.0
     - To reproduce: `python text_classification.py --config configs/sst5-2.yml --gpu 0`
 
-## TODOs
-
-- FP16 support (mixed-precision training/inference)
-- Integrate kernels with dgl 0.5
-- CPU support

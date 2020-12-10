@@ -1,3 +1,4 @@
+"""Refactor to support dgl 0.5 (WIP)"""
 from torch.utils.data import Dataset
 from scipy.sparse import coo_matrix
 from torchtext import datasets
@@ -94,10 +95,7 @@ class LMBatcher(GraphBatcher):
         pos_arr = th.cat(pos_arr)
         etypes = th.cat(etypes)
         row, col = map(np.concatenate, (row, col))
-        coo = coo_matrix((np.zeros_like(row), (row, col)), shape=(n, n))
-        g = dgl.DGLGraph(coo, readonly=True)
-        g.set_n_initializer(dgl.init.zero_initializer)
-        g.set_e_initializer(dgl.init.zero_initializer)
+        g = dgl.graph((row, col), num_nodes=n)
 
         data = th.cat(data)
         labels = th.cat(labels)
@@ -132,6 +130,5 @@ class LMDataset(Dataset):
                     self.data[index * self.max_length // 2: (index + 1) * self.max_length // 2])
         else: # training
             return self.data[(index - 1) * self.max_length // 2: (index + 1) * self.max_length // 2]
-
 
 

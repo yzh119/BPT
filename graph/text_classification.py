@@ -1,3 +1,4 @@
+"""Refactor to support dgl 0.5 (WIP)"""
 from collections import namedtuple
 from torch.utils.data import Dataset
 from scipy.sparse import coo_matrix

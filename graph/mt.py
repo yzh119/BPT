@@ -1,5 +1,10 @@
+""" Refactor to support dgl 0.5 (WIP)
+TODO list:
+    1. use heterograph api.
+    2. move graph from cpu to gpu.
+"""
+
 from torch.utils.data import Dataset
-from scipy.sparse import coo_matrix
 from torchtext.datasets import TranslationDataset
 from torchtext.vocab import Vocab
 from .base import Batch, EncDecBatcher
@@ -198,8 +203,7 @@ class MTInferBatcher(EncDecBatcher):
         pos_arr['enc'] = th.cat(pos_arr['enc'])
         etypes['enc'] = th.cat(etypes['enc'])
         row['enc'], col['enc'] = map(np.concatenate, (row['enc'], col['enc']))
-        coo_enc = coo_matrix((np.zeros_like(row['enc']), (row['enc'], col['enc'])), shape=(n_enc, n_enc))
-        g_enc = dgl.DGLGraph(coo_enc, readonly=True)
+        g_enc = dgl.graph((row['enc'], col['enc']), num_nodes=n_enc)
 
         # construct decoder
         n_dec = v_shift['dec']
@@ -207,15 +211,7 @@ class MTInferBatcher(EncDecBatcher):
         pos_arr['dec'] = th.cat(pos_arr['dec'])
         etypes['dec'] = th.cat(etypes['dec'])
         row['dec'], col['dec'] = map(np.concatenate, (row['dec'], col['dec']))
-        coo_dec = coo_matrix((np.zeros_like(row['dec']), (row['dec'], col['dec'])), shape=(n_dec, n_dec))
-        g_dec = [dgl.DGLGraph(coo_dec, readonly=True) for _ in range(self.k)]
-
-        # intialize graph
-        g_enc.set_n_initializer(dgl.init.zero_initializer)
-        g_enc.set_e_initializer(dgl.init.zero_initializer)
-        for i in range(self.k):
-            g_dec[i].set_n_initializer(dgl.init.zero_initializer)
-            g_dec[i].set_e_initializer(dgl.init.zero_initializer)
+        g_dec = [dgl.graph((row['dec'], col['dec']), num_nodes=n_dec) for _ in range(self.k)]
 
         data['enc'] = th.cat(data['enc'])
         data['dec'] = th.cat(data['dec'])
@@ -326,8 +322,7 @@ class MTBatcher(EncDecBatcher):
         pos_arr['enc'] = th.cat(pos_arr['enc'])
         etypes['enc'] = th.cat(etypes['enc'])
         row['enc'], col['enc'] = map(np.concatenate, (row['enc'], col['enc']))
-        coo_enc = coo_matrix((np.zeros_like(row['enc']), (row['enc'], col['enc'])), shape=(n_enc, n_enc))
-        g_enc = dgl.DGLGraph(coo_enc, readonly=True)
+        g_enc = dgl.graph((row['enc'], col['enc']), num_nodes=n_enc)
 
         # construct decoder
         n_dec = v_shift['dec']
@@ -335,16 +330,14 @@ class MTBatcher(EncDecBatcher):
         pos_arr['dec'] = th.cat(pos_arr['dec'])
         etypes['dec'] = th.cat(etypes['dec'])
         row['dec'], col['dec'] = map(np.concatenate, (row['dec'], col['dec']))
-        coo_dec = coo_matrix((np.zeros_like(row['dec']), (row['dec'], col['dec'])), shape=(n_dec, n_dec))
-        g_dec = dgl.DGLGraph(coo_dec, readonly=True)
+        g_dec = dgl.graph((row['dec'], col['dec']), num_nodes=n_dec)
 
         # construct inter-graph
         # the code here is ugly and we should replace it with DGL bipartite graph
         # in the future.
         n_inter = max(n_enc, n_dec)
         row_inter, col_inter = map(np.concatenate, (row_inter, col_inter))
-        coo_inter = coo_matrix((np.zeros_like(row_inter), (row_inter, col_inter)), shape=(n_inter, n_inter))
-        g_inter = dgl.DGLGraph(coo_inter, readonly=True)
+        g_inter = dgl.graph((row_inter, col_inter), num_nodes=n_inter)
 
         # process readout ids
         readout_ids = th.cat(readout_ids)
